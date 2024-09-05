@@ -1,0 +1,41 @@
+server:
+  port: 8081
+
+spring:
+  cloud:
+    function:
+      definition: booking
+    stream:
+      bindings:
+        booking-in-0:
+          destination: booking
+          group: booking-group
+          consumer:
+            concurrency: 1
+        booking-out-0:
+          destination: booking/train/reply
+      binders:
+        local-solace:
+          type: solace
+          environment:
+            solace:
+              java:
+                host: tcp://localhost:55555
+                msgVpn: default
+                clientUsername: default
+                clientPassword: default
+      solace:
+        bindings:
+          booking-in-0:
+            consumer:
+              queueAdditionalSubscriptions: booking/train
+
+
+solace:
+  java:
+    host: tcp://localhost:55554
+    msgVpn: default
+    clientUsername: default
+    clientPassword: default
+
+
