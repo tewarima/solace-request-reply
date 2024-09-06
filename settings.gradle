@@ -1,4 +1,5 @@
 rootProject.name = 'solace-request-reply'
 include 'server'
 include 'client'
+include 'spring-integration'
 
