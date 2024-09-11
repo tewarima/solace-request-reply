@@ -13,7 +13,7 @@ spring:
           consumer:
             concurrency: 1
         booking-out-0:
-          destination: booking/train/reply
+          destination: ''
       binders:
         local-solace:
           type: solace

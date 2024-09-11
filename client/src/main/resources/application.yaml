@@ -7,8 +7,10 @@ spring:
       definition: bookingreply
     stream:
       bindings:
+        request-out:
+          destination: booking  # Queue to send request
         bookingreply-in-0:
-          destination: bookingreply
+          destination: cris/reply/train456  # Topic to receive replies as set by ReplyTO
           group: bookingreply-group
           consumer:
             concurrency: 1

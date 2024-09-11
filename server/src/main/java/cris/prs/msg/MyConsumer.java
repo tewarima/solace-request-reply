@@ -19,8 +19,23 @@ public class MyConsumer {
         return msg -> {
             MessageHeaders headers = msg.getHeaders();
             String correlationId = headers.get(SolaceHeaders.CORRELATION_ID,String.class);
+            String replyToTopic = null;
+
+             // Check if replyTo header is of type Topic or String and handle accordingly
+             Object replyToHeader = headers.get(SolaceHeaders.REPLY_TO);
+             if (replyToHeader instanceof Topic) {
+                 replyToTopic = ((Topic) replyToHeader).getName(); // Convert Topic to String
+             } else if (replyToHeader instanceof String) {
+                 replyToTopic = (String) replyToHeader;
+             } else {
+                 log.error("Invalid type for 'solace_replyTo' header: {}", replyToHeader);
+                 throw new IllegalArgumentException("Invalid type for 'solace_replyTo' header");
+             }
+
             log.info("Headers:{}",headers);
             log.info("Consuming Message {}:{}",SolaceHeaders.CORRELATION_ID,correlationId);
+            log.info("Replying to Topic from Headers: {}", replyToTopic != null ? replyToTopic : "null");
+            
             String v = msg.getPayload();
             log.info("Payload: {}",v);
             if("sleep".equals(v)){
@@ -33,6 +48,7 @@ public class MyConsumer {
             }
             return MessageBuilder.withPayload(v.toUpperCase())
                     .setHeader(SolaceHeaders.CORRELATION_ID,correlationId)
+                    .setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic)
                     .setHeader(SolaceHeaders.IS_REPLY, true)
                     .build();
         };

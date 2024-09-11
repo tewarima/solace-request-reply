@@ -27,9 +27,11 @@ public class RequestReplyService {
 
     public void sendAndReceive(String payload){
         String correlationId = UUID.randomUUID().toString();
+        Destination replyToTopic = JCSMPFactory.onlyInstance().createTopic("cris/reply/train456");
         log.info("Sending Message {}:{}",SolaceHeaders.CORRELATION_ID,correlationId);
         Message<String> msg = MessageBuilder.withPayload(payload)
                 .setHeader(SolaceHeaders.CORRELATION_ID,correlationId)
+                .setHeader(SolaceHeaders.REPLY_TO, replyToTopic)
                 .build();
         sb.send("booking/train", msg);
     }
